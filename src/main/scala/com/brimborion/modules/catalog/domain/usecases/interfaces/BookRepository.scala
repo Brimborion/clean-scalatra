@@ -1,4 +1,4 @@
-package com.brimborion.modules.catalog.domain.services.interfaces
+package com.brimborion.modules.catalog.domain.usecases.interfaces
 
 import java.time.LocalDate
 import java.util.UUID

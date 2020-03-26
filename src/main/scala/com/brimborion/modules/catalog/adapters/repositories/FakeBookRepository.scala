@@ -6,7 +6,7 @@ import java.util.UUID
 import com.brimborion.core.exceptions.NotFoundException
 import com.brimborion.modules.catalog.domain.entities.mocks.BookMock
 import com.brimborion.modules.catalog.domain.entities.{Author, Book}
-import com.brimborion.modules.catalog.domain.services.interfaces.BookRepository
+import com.brimborion.modules.catalog.domain.usecases.interfaces.BookRepository
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -1,5 +1,6 @@
 package com.brimborion.modules.user.domain.entities.enums
 
-sealed trait UserStatus
-case object Active extends UserStatus
-case object Closed extends UserStatus
+object UserStatus extends Enumeration {
+  type UserStatus = Value
+  val ACTIVE, CLOSED = Value
+}

@@ -13,6 +13,9 @@ resolvers += Classpaths.typesafeReleases
 libraryDependencies ++= Seq(
   "org.scalatra" %% "scalatra" % ScalatraVersion,
   "org.scalatra" %% "scalatra-scalatest" % ScalatraVersion % "test",
+  "org.scalatra" %% "scalatra-json" % ScalatraVersion,
+  "org.json4s"   %% "json4s-jackson" % "3.5.0",
+  "org.json4s" %% "json4s-ext" % "3.5.0",
   "ch.qos.logback" % "logback-classic" % "1.2.3" % "runtime",
   "org.eclipse.jetty" % "jetty-webapp" % "9.4.19.v20190610" % "container",
   "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided",

@@ -5,8 +5,8 @@ import java.util.UUID
 import com.brimborion.core.exceptions.NotFoundException
 import com.brimborion.modules.catalog.domain.entities.mocks.BookItemMock
 import com.brimborion.modules.catalog.domain.entities.BookItem
-import com.brimborion.modules.catalog.domain.entities.enums.BookStatus
-import com.brimborion.modules.catalog.domain.services.interfaces.{BookItemRepository, BookRepository}
+import com.brimborion.modules.catalog.domain.entities.enums.BookStatus.BookStatus
+import com.brimborion.modules.catalog.domain.usecases.interfaces.{BookItemRepository, BookRepository}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -14,7 +14,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class FakeBookItemRepository extends BookItemRepository {
   private val bookRepository = new FakeBookRepository
   private var bookItems = Vector(
-    new BookItemMock(UUID.fromString("ea5d62c5-fe03-46bb-a814-4db09270f647")).setBook(bookRepository.books(0)).build()
+    new BookItemMock(UUID.fromString("ea5d62c5-fe03-46bb-a814-4db09270f647")).setBook(bookRepository.books(0)).build(),
+    new BookItemMock(UUID.fromString("ea5d62c5-fe03-46bb-a814-4db09270f648")).setBook(bookRepository.books(0)).build(),
+    new BookItemMock(UUID.fromString("ea5d62c5-fe03-46bb-a814-4db09270f649")).setBook(bookRepository.books(0)).build(),
+    new BookItemMock(UUID.fromString("ea5d62c5-fe03-46bb-a814-4db09270f650")).setBook(bookRepository.books(0)).build(),
+    new BookItemMock(UUID.fromString("ea5d62c5-fe03-46bb-a814-4db09270f651")).setBook(bookRepository.books(0)).build()
   )
 
   override def create(bookIsbn: String, tag: String, status: BookStatus): Future[BookItem] = {
@@ -42,5 +46,15 @@ class FakeBookItemRepository extends BookItemRepository {
 
     bookItems = bookItems.updated(index, bookItem)
     Future.successful(bookItem)
+  }
+
+  // Only for demo tests purpose
+  def dropData(): Unit = {
+    bookItems = Vector.empty
+  }
+
+  // Only for demo tests purpose
+  def addData(bookItem: BookItem): Unit = {
+    bookItems = bookItems :+ bookItem
   }
 }

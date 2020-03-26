@@ -1,8 +1,9 @@
 package com.brimborion.modules.catalog.config
 
 import com.brimborion.core.module.{ControllerDef, Module}
+import com.brimborion.modules.catalog.adapters.controllers.{AuthorController, BookController, BookItemController}
 import com.brimborion.modules.catalog.adapters.repositories.{FakeAuthorRepository, FakeBookItemRepository, FakeBookRepository}
-import com.brimborion.modules.catalog.domain.services.{AuthorService, BookItemService, BookService}
+import com.brimborion.modules.catalog.domain.usecases.{AuthorUseCases, BookItemUseCases, BookUseCases}
 
 object CatalogModule extends Module {
   // Repositories initialization
@@ -11,10 +12,13 @@ object CatalogModule extends Module {
   private val authorRepository = new FakeAuthorRepository
 
   // Services initialization
-  private val bookItemService = new BookItemService(bookItemRepository, bookRepository)
-  private val bookService = new BookService(bookRepository)
-  private val authorService = new AuthorService(authorRepository)
+  private val bookItemUseCases = new BookItemUseCases(bookItemRepository, bookRepository)
+  private val bookUseCases = new BookUseCases(bookRepository)
+  private val authorUseCases = new AuthorUseCases(authorRepository)
 
-  override val controllers: List[ControllerDef] = List(
+  override def getControllers: List[ControllerDef] = List(
+    ControllerDef("/authors", new AuthorController(authorUseCases)),
+    ControllerDef("/books", new BookController(bookUseCases)),
+    ControllerDef("/bookItems", new BookItemController(bookItemUseCases))
   )
 }

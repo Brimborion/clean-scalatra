@@ -1,8 +1,9 @@
-package com.brimborion.modules.user.domain.services.interfaces
+package com.brimborion.modules.user.domain.usecases.interfaces
 
 import java.util.UUID
 
 import com.brimborion.modules.user.domain.entities.enums.UserStatus
+import com.brimborion.modules.user.domain.entities.enums.UserStatus.UserStatus
 import com.brimborion.modules.user.domain.entities.{Person, User}
 
 import scala.concurrent.Future

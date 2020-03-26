@@ -1,5 +1,6 @@
 package com.brimborion.modules.user.domain.entities.enums
 
-sealed trait Role
-case object Borrower extends Role
-case object Librarian extends Role
+object Role extends Enumeration {
+  type Role = Value
+  val BORROWER, LIBRARIAN = Value
+}

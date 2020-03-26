@@ -14,6 +14,5 @@ class ScalatraBootstrap extends LifeCycle {
   }
 
   private def loadModule(module: Module, context: ServletContext): Unit =
-    module.controllers
-      .foreach(controller => context.mount(controller.implementation, controller.urlPattern))
+    module.getControllers.foreach(controller => context.mount(controller.implementation, controller.urlPattern))
 }

@@ -1,16 +1,16 @@
 package com.brimborion.modules.catalog.domain.entities.mocks
 
-import java.time.LocalDate
 import java.util.UUID
 
 import com.brimborion.core.test.Mock
-import com.brimborion.modules.catalog.domain.entities.enums.{Available, BookStatus}
-import com.brimborion.modules.catalog.domain.entities.{Available, Book, BookItem}
+import com.brimborion.modules.catalog.domain.entities.enums.BookStatus
+import com.brimborion.modules.catalog.domain.entities.enums.BookStatus.BookStatus
+import com.brimborion.modules.catalog.domain.entities.{Book, BookItem}
 
 class BookItemMock(val id: UUID) extends Mock[BookItem] {
   private var book = new BookMock().build()
   private var tag = "LRT"
-  private var status: BookStatus = Available
+  private var status: BookStatus = BookStatus.AVAILABLE
 
   def setBook(book: Book): BookItemMock = {
     this.book = book

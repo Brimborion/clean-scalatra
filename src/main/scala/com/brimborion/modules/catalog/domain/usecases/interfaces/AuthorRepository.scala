@@ -1,9 +1,9 @@
-package com.brimborion.modules.catalog.domain.services.interfaces
+package com.brimborion.modules.catalog.domain.usecases.interfaces
 
 import java.time.LocalDate
 import java.util.UUID
 
-import com.brimborion.modules.catalog.domain.entities.{Author, Book}
+import com.brimborion.modules.catalog.domain.entities.Author
 
 import scala.concurrent.Future
 

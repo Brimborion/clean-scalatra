@@ -6,7 +6,7 @@ import java.util.UUID
 import com.brimborion.core.exceptions.NotFoundException
 import com.brimborion.modules.catalog.domain.entities.Author
 import com.brimborion.modules.catalog.domain.entities.mocks.AuthorMock
-import com.brimborion.modules.catalog.domain.services.interfaces.AuthorRepository
+import com.brimborion.modules.catalog.domain.usecases.interfaces.AuthorRepository
 
 import scala.concurrent.Future
 
