@@ -1,0 +1,167 @@
+version: '3.4'
+
+networks:
+  kong-net:
+  library-net:
+  keycloak-net:
+
+volumes:
+  kong-data:
+  keycloak-data:
+
+services:
+  library:
+    image: bigtruedata/sbt:latest
+    volumes:
+      - ./:/app
+      - ./.ivy2:/root/.ivy2
+      - ./.sbt:/root/.sbt
+    command: sbt "~;jetty:stop;jetty:start"
+    ports:
+      - "8080:8080"
+    networks:
+      - library-net
+
+  kong-migrations:
+    image: kong-oidc:latest
+    command: kong migrations bootstrap
+    depends_on:
+      - kong-db
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_DATABASE: kong
+      KONG_PG_HOST: kong-db
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+    networks:
+      - kong-net
+    restart: on-failure
+
+  kong-migrations-up:
+    image: kong-oidc:latest
+    command: kong migrations up && kong migrations finish
+    depends_on:
+      - kong-db
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_DATABASE: kong
+      KONG_PG_HOST: kong-db
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+    networks:
+      - kong-net
+    restart: on-failure
+
+  kong:
+    build:
+      context: automation/docker/kong
+    image: kong-oidc:latest
+    depends_on:
+      - kong-migrations
+      - kong-migrations-up
+    networks:
+      - kong-net
+      - library-net
+    ports:
+      - "8000:8000/tcp"
+      - "127.0.0.1:8001:8001/tcp"
+      - "8443:8443/tcp"
+      - "127.0.0.1:8444:8444/tcp"
+    environment:
+      KONG_CASSANDRA_CONTACT_POINTS: kong-db
+      KONG_DATABASE: postgres
+      KONG_PG_DATABASE: kong
+      KONG_PG_HOST: kong-db
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG:  /dev/stderr
+      KONG_ADMIN_ERROR_LOG:  /dev/stderr
+      KONG_PROXY_LISTEN:     0.0.0.0:8000, 0.0.0.0:8443 ssl
+      KONG_ADMIN_LISTEN:     0.0.0.0:8001, 0.0.0.0:8444 ssl
+      KONG_PLUGINS: bundled,oidc
+    restart: on-failure
+    links:
+      - library
+
+  konga-prepare:
+    image: pantsel/konga:latest
+    command: "-c prepare -a postgres -u postgresql://kong:kong@kong-db:5432/konga_db"
+    networks:
+      - kong-net
+    restart: on-failure
+    links:
+      - kong-db
+    depends_on:
+      - kong-db
+
+  konga:
+    image: pantsel/konga:latest
+    depends_on:
+      - konga-prepare
+    networks:
+      - kong-net
+    ports:
+      - "1337:1337"
+    environment:
+      DB_ADAPTER: postgres
+      DB_HOST: kong-db
+      DB_DATABASE: konga_db
+      DB_USER: kong
+      DB_PASSWORD: kong
+      NODE_ENV: development
+      KONGA_SEED_USER_DATA_SOURCE_FILE: /run/secrets/konga-users
+      KONGA_SEED_KONG_NODE_DATA_SOURCE_FILE: /run/secrets/konga-nodes
+    secrets:
+      - konga-users
+      - konga-nodes
+  
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    depends_on:
+      - keycloak-db
+    networks:
+      - keycloak-net
+    ports:
+      - "8081:8080"
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: keycloak-db
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: keycloak
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: P@ssword
+
+  kong-db:
+    image: postgres:11-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: kong
+      POSTGRES_USER: kong
+      POSTGRES_PASSWORD: kong
+    networks:
+      - kong-net
+    volumes:
+      - kong-data:/var/lib/postgresql/data
+  
+  keycloak-db:
+    image: postgres:12-alpine
+    volumes:
+      - keycloak-data:/var/lib/postgresql/data
+    networks:
+      - keycloak-net
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+
+secrets:
+  konga-users:
+    file: ./automation/konga/users.data
+  konga-nodes:
+    file: ./automation/konga/nodes.data

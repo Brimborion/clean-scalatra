@@ -123,6 +123,26 @@
 					"response": []
 				},
 				{
+					"name": "addAuthor Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/authors/6859affc-9192-421d-841b-6985a2d2cb4f",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"authors",
+								"6859affc-9192-421d-841b-6985a2d2cb4f"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "addBook",
 					"request": {
 						"method": "POST",

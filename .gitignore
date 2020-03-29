@@ -67,3 +67,7 @@ jrebel.lic
 
 # paulp script
 /.lib/
+
+# sbt cache
+.ivy2
+.sbt
