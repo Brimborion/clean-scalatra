@@ -19,6 +19,6 @@ object CatalogModule extends Module {
   override def getControllers: List[ControllerDef] = List(
     ControllerDef("/authors", new AuthorController(authorUseCases)),
     ControllerDef("/books", new BookController(bookUseCases)),
-    ControllerDef("/bookItems", new BookItemController(bookItemUseCases))
+    ControllerDef("/book-items", new BookItemController(bookItemUseCases))
   )
 }

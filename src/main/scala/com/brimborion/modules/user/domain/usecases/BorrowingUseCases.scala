@@ -12,10 +12,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class BorrowingUseCases(private val userRepository: UserRepository, private val bookItemService: BookItemService) {
-  def borrowBook(userId: UUID, bookItemId: UUID): Future[Unit] =
+  def borrowBook(userId: UUID, bookItemId: UUID): Future[Unit] = {
+    val userFuture = userRepository.find(userId)
+    val bookItemFuture = bookItemService.getBookItem(bookItemId)
+
     for {
-      user <- userRepository.find(userId)
-      bookItem <- bookItemService.getBookItem(bookItemId)
+      user <- userFuture
+      bookItem <- bookItemFuture
     } yield {
       if (!bookItem.status.equals(BookStatus.AVAILABLE)) {
         throw UnavailableBookItemException(s"Book with id ${bookItemId} is has status ${bookItem.status}")
@@ -29,6 +32,7 @@ class BorrowingUseCases(private val userRepository: UserRepository, private val 
         userRepository.update(userToUpdate)
       })
     }
+  }
 
   def returnBook(userId: UUID, bookItemId: UUID): Future[Unit] = ???
 }
