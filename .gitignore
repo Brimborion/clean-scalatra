@@ -65,5 +65,14 @@ jrebel.lic
 .*.sw?
 .idea
 
+# vscode
+.vscode
+.metals
+metals.sbt
+
 # paulp script
 /.lib/
+
+# sbt cache
+.ivy2
+.sbt

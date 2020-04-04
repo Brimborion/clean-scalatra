@@ -10,8 +10,6 @@ import com.brimborion.modules.user.domain.usecases.BorrowingUseCases
 import com.brimborion.modules.user.domain.usecases.exceptions.TooMuchBorrowingsException
 import org.scalatra.{Conflict, NoContent, NotFound}
 
-import scala.concurrent.Future
-
 class BorrowingController(private val borrowingUseCases: BorrowingUseCases) extends CustomController {
   post("/users/:id") {
     val userId = UUID.fromString(params("id"))
@@ -19,10 +17,10 @@ class BorrowingController(private val borrowingUseCases: BorrowingUseCases) exte
 
     borrowingUseCases.borrowBook(userId, postBorrowingDto.bookItemId)
       .map(_ => NoContent())
-      .recoverWith {
-        case e: NotFoundException => Future.successful(NotFound(e.message))
-        case e: UnavailableBookItemException => Future.successful(Conflict(e.message))
-        case e: TooMuchBorrowingsException => Future.successful(Conflict(e.message))
+      .recover {
+        case e: NotFoundException => NotFound(e.message)
+        case e: UnavailableBookItemException => Conflict(e.message)
+        case e: TooMuchBorrowingsException => Conflict(e.message)
       }
   }
 }

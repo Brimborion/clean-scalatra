@@ -8,16 +8,14 @@ import com.brimborion.modules.user.adapters.controllers.dtos.{PostUserDto, UserD
 import com.brimborion.modules.user.domain.usecases.UserUseCases
 import org.scalatra.{Conflict, Created, NotFound, Ok}
 
-import scala.concurrent.Future
-
 class UserController(private val userService: UserUseCases) extends CustomController {
   get("/:id") {
     val id = params("id")
 
     userService.getUser(UUID.fromString(id))
       .map(user => Ok(UserDto(user)))
-      .recoverWith{
-        case e: NotFoundException =>  Future.successful(NotFound(e.message))
+      .recover {
+        case e: NotFoundException => NotFound(e.message)
       }
   }
 
@@ -26,8 +24,8 @@ class UserController(private val userService: UserUseCases) extends CustomContro
 
     userService.addUser(postUserDto.toPerson)
       .map(user => Created(UserDto(user)))
-      .recoverWith{
-        case e: DuplicateKeyException => Future.successful(Conflict(e.message))
+      .recover {
+        case e: DuplicateKeyException => Conflict(e.message)
       }
   }
 }
