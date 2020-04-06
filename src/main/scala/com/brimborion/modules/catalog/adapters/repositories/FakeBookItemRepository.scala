@@ -3,13 +3,13 @@ package com.brimborion.modules.catalog.adapters.repositories
 import java.util.UUID
 
 import com.brimborion.core.exceptions.NotFoundException
-import com.brimborion.modules.catalog.domain.entities.mocks.BookItemMock
 import com.brimborion.modules.catalog.domain.entities.BookItem
 import com.brimborion.modules.catalog.domain.entities.enums.BookStatus.BookStatus
-import com.brimborion.modules.catalog.domain.usecases.interfaces.{BookItemRepository, BookRepository}
+import com.brimborion.modules.catalog.domain.entities.mocks.BookItemMock
+import com.brimborion.modules.catalog.domain.usecases.interfaces.BookItemRepository
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class FakeBookItemRepository extends BookItemRepository {
   private val bookRepository = new FakeBookRepository
@@ -33,7 +33,7 @@ class FakeBookItemRepository extends BookItemRepository {
   override def find(id: UUID): Future[BookItem] = {
     val futureBookItem = bookItems.find(bookItem => bookItem.id.equals(id))
     futureBookItem match {
-      case None => Future.failed(throw NotFoundException(s"BookItom with id ${id} not found."))
+      case None => Future.failed(throw NotFoundException(s"BookItem with id ${id} not found."))
       case Some(bookItem) => Future.successful(bookItem)
     }
   }

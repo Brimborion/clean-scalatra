@@ -1,0 +1,150 @@
+openapi: 3.0.0
+info:
+  title: Library Demo REST API
+  description: Library Demo REST API
+  version: 0.1.0
+servers:
+  - url: http://localhost:8080
+    description: Dev server
+  - url: http://localhost:8000
+    description: Kong gateway
+paths:
+  /users/{userId}:
+    get:
+      summary: Get user by id.
+      description: Optional extended description in CommonMark or HTML.
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+            format: uuid
+            example: 1884323b-d91d-4411-ad08-69cda50e7f3e
+          required: true
+          description: ID of the user to get
+      responses:
+        '200':
+          description: Requested user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+        '404':
+          description: User not found
+  /borrowings/users/{userId}:
+    post:
+      summary: Borrow a book.
+      description: Optional extended description in CommonMark or HTML.
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+            format: uuid
+            example: 1884323b-d91d-4411-ad08-69cda50e7f3e
+          required: true
+          description: ID of the user who borrows a book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostBorrowingDto'
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: User or book not found
+        '409':
+          description: Book is unavailable or too much borrowings
+components:
+  schemas:
+    UserDto:
+      type: object
+      required:
+        - id
+        - person
+        - borrowings
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        person:
+          $ref: "#/components/schemas/PersonDto"
+        borrowings:
+          type: array
+          items:
+            $ref: "#/components/schemas/BookItemDto"
+        status:
+          type: string
+          enum: [ACTIVE, CLOSED]
+    PersonDto:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+    BookItemDto:
+      type: object
+      required:
+        - id
+        - book
+        - tag
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        book:
+          $ref: "#/components/schemas/BookDto"
+        tag:
+          type: string
+        status:
+          type: string
+          enum: [AVAILABLE, LOANED, LOST]
+    BookDto:
+      type: object
+      required:
+        - isbn
+        - title
+        - author
+        - publicationDate
+      properties:
+        isbn:
+          type: string
+        title:
+          type: string
+        author:
+          $ref: "#/components/schemas/AuthorDto"
+        publicationDate:
+          type: string
+          format: date
+    AuthorDto:
+      type: object
+      required:
+        - id
+        - name
+        - birthDate
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        birtDate:
+          type: string
+          format: date
+    PostBorrowingDto:
+      type: object
+      required:
+        - bookItemId
+      properties:
+        bookItemId:
+          type: string
+          format: uuid

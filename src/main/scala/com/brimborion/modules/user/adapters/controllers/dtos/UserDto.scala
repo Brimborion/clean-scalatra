@@ -6,9 +6,9 @@ import com.brimborion.modules.catalog.adapters.controllers.dtos.BookItemDto
 import com.brimborion.modules.user.domain.entities.User
 import com.brimborion.modules.user.domain.entities.enums.UserStatus
 
-case class UserDto(id: String, person: PersonDto, borrowings: Vector[BookItemDto], status: String) {
+case class UserDto(id: UUID, person: PersonDto, borrowings: Vector[BookItemDto], status: String) {
   def toUser: User = User(
-    id = UUID.fromString(id),
+    id = id,
     person = person.toPerson,
     borrowings = borrowings.map(bookItemDto => bookItemDto.toBookItem),
     status = UserStatus.withName(status)
@@ -17,7 +17,7 @@ case class UserDto(id: String, person: PersonDto, borrowings: Vector[BookItemDto
 
 object UserDto {
   def apply(user: User): UserDto = UserDto(
-    id = user.id.toString,
+    id = user.id,
     person = PersonDto(user.person),
     borrowings = user.borrowings.map(bookItem => BookItemDto(bookItem)),
     status = user.status.toString

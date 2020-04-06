@@ -12,6 +12,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class BorrowingUseCases(private val userRepository: UserRepository, private val bookItemService: BookItemService) {
+
+  @throws[UnavailableBookItemException]
+  @throws[TooMuchBorrowingsException]
   def borrowBook(userId: UUID, bookItemId: UUID): Future[Unit] = {
     val userFuture = userRepository.find(userId)
     val bookItemFuture = bookItemService.getBookItem(bookItemId)
