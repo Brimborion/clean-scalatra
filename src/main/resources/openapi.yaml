@@ -9,6 +9,24 @@ servers:
   - url: http://localhost:8000
     description: Kong gateway
 paths:
+  /users/:
+    post:
+      summary: Create user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostUserDto'
+      responses:
+        '200':
+          description: Created user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+        '409':
+          description: Duplicate key
   /users/{userId}:
     get:
       summary: Get user by id.
@@ -57,6 +75,54 @@ paths:
           description: User or book not found
         '409':
           description: Book is unavailable or too much borrowings
+  /authors/:
+    post:
+      summary: Add author
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostAuthorDto'
+      responses:
+        '201':
+          description:  Created author
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthorDto"
+  /books/:
+    post:
+      summary: Add book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostBookDto'
+      responses:
+        '201':
+          description:  Created book
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookDto"
+  /book-items/:
+    post:
+      summary: Add book item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostBookItemDto'
+      responses:
+        '201':
+          description:  Created book item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookItemDto"
 components:
   schemas:
     UserDto:
@@ -124,7 +190,7 @@ components:
           $ref: "#/components/schemas/AuthorDto"
         publicationDate:
           type: string
-          format: date
+          format: date-time
     AuthorDto:
       type: object
       required:
@@ -139,7 +205,7 @@ components:
           type: string
         birtDate:
           type: string
-          format: date
+          format: date-time
     PostBorrowingDto:
       type: object
       required:
@@ -148,3 +214,53 @@ components:
         bookItemId:
           type: string
           format: uuid
+    PostUserDto:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+    PostAuthorDto:
+      type: object
+      required:
+        - name
+        - birthDate
+      properties:
+        name:
+          type: string
+        birtDate:
+          type: string
+          format: date-time
+    PostBookDto:
+      type: object
+      required:
+        - isbn
+        - title
+        - authorId
+        - publicationDate
+      properties:
+        isbn:
+          type: string
+        title:
+          type: string
+        authorId:
+          type: string
+          format: uuid
+        publicationDate:
+          type: string
+          format: date-time
+    PostBookItemDto:
+      type: object
+      required:
+        - bookIsbn
+        - tag
+      properties:
+        bookIsbn:
+          type: string
+        tag:
+          type: string
