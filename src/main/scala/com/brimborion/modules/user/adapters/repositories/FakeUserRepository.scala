@@ -49,32 +49,31 @@ class FakeUserRepository extends UserRepository {
     })
   }
 
-  override def find(id: UUID): Future[User] = {
+  override def find(id: UUID): Future[User] = Future {
     val maybeUser = users.find(user => user.id.equals(id))
     maybeUser match {
-      case None => Future.failed(throw NotFoundException(s"User with id ${id} not found."))
-      case Some(user) => Future.successful(user)
+      case None => throw NotFoundException(s"User with id ${id} not found.")
+      case Some(user) => user
     }
   }
 
-  override def disable(id: UUID): Future[Unit] = {
+  override def disable(id: UUID): Future[Unit] = Future {
     val maybeUser = users.find(user => user.id.equals(id))
     maybeUser match {
-      case None => Future.failed(throw NotFoundException(s"User with id ${id} not found."))
-      case _ => Future.successful {
-        users = users.filter(user => !user.id.equals(id))
-      }
+      case None => throw NotFoundException(s"User with id ${id} not found.")
+      case _ => users = users.filter(user => !user.id.equals(id))
     }
   }
 
-  override def update(user: User): Future[User] = {
+  override def update(user: User): Future[User] = Future {
     val index = users.indexWhere(u => u.id.equals(user.id))
     if (index == -1) {
       throw NotFoundException(s"User with id ${user.id} not found.")
     }
 
     users = users.updated(index, user)
-    Future.successful(user)
+
+    user
   }
 
   // Only for demo tests purpose

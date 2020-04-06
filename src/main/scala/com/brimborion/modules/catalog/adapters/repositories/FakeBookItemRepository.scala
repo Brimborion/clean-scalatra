@@ -30,22 +30,22 @@ class FakeBookItemRepository extends BookItemRepository {
     })
   }
 
-  override def find(id: UUID): Future[BookItem] = {
+  override def find(id: UUID): Future[BookItem] = Future {
     val futureBookItem = bookItems.find(bookItem => bookItem.id.equals(id))
     futureBookItem match {
-      case None => Future.failed(throw NotFoundException(s"BookItem with id ${id} not found."))
-      case Some(bookItem) => Future.successful(bookItem)
+      case None => throw NotFoundException(s"BookItem with id ${id} not found.")
+      case Some(bookItem) => bookItem
     }
   }
 
-  override def update(bookItem: BookItem): Future[BookItem] = {
+  override def update(bookItem: BookItem): Future[BookItem] = Future {
     val index = bookItems.indexWhere(bi => bi.id.equals(bookItem.id))
     if (index == -1) {
       throw NotFoundException(s"BookItem with id ${bookItem.id} not found.")
     }
 
     bookItems = bookItems.updated(index, bookItem)
-    Future.successful(bookItem)
+    bookItem
   }
 
   // Only for demo tests purpose
