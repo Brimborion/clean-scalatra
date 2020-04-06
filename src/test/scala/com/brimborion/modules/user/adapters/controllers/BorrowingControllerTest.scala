@@ -2,6 +2,7 @@ package com.brimborion.modules.user.adapters.controllers
 
 import java.util.UUID
 
+import com.atlassian.oai.validator.model.Request
 import com.brimborion.modules.catalog.adapters.repositories.{FakeBookItemRepository, FakeBookRepository}
 import com.brimborion.modules.catalog.domain.entities.mocks.BookItemMock
 import com.brimborion.modules.catalog.domain.usecases.BookItemUseCases
@@ -9,8 +10,8 @@ import com.brimborion.modules.user.adapters.controllers.dtos.PostBorrowingDto
 import com.brimborion.modules.user.adapters.repositories.FakeUserRepository
 import com.brimborion.modules.user.adapters.services.InternalBookItemService
 import com.brimborion.modules.user.domain.entities.mocks.UserMock
-import com.brimborion.modules.user.domain.usecases.{BorrowingUseCases, UserUseCases}
-import core.ComponentSpec
+import com.brimborion.modules.user.domain.usecases.BorrowingUseCases
+import core.{ClientResponseMapper, ComponentSpec}
 import org.json4s.jackson.Serialization.write
 
 class BorrowingControllerTest extends ComponentSpec {
@@ -100,6 +101,21 @@ class BorrowingControllerTest extends ComponentSpec {
         status should equal(204)
       }
     }
+    it("should return a valid response") {
+      val bookItemId = UUID.fromString("ea5d62c5-fe03-46bb-a814-4db09270f649")
+      bookItemRepository.addData(new BookItemMock(bookItemId).build())
+      val userId = UUID.fromString("699b011a-6c53-46bf-b47d-30fa1b43bd87")
+      val user = new UserMock(userId).build()
+      userRepository.addData(user)
+
+      val postBorrowingDto = PostBorrowingDto(bookItemId)
+      val requestBody = write(postBorrowingDto)
+      val uri = s"/borrowings/users/${userId}"
+      post(uri, requestBody) {
+        val validation = openApiValidator.validateResponse(uri, Request.Method.POST, ClientResponseMapper.toSimpleResponse(response))
+        assert(!validation.hasErrors)
+      }
+    }
     it("should add bookItem to user's borrowings if borrowing is processed") {
       val bookItemId = UUID.fromString("ea5d62c5-fe03-46bb-a814-4db09270f649")
       bookItemRepository.addData(new BookItemMock(bookItemId).build())
@@ -109,7 +125,8 @@ class BorrowingControllerTest extends ComponentSpec {
 
       val postBorrowingDto = PostBorrowingDto(bookItemId)
       val requestBody = write(postBorrowingDto)
-      post(s"/borrowings/users/${userId}", requestBody) {
+      val uri = s"/borrowings/users/${userId}"
+      post(uri, requestBody) {
         val updatedUser = userRepository.getAllData.find(user => user.id.equals(userId)).get
         assert(updatedUser.borrowings.exists(bookItem => bookItem.id.equals(bookItemId)))
       }

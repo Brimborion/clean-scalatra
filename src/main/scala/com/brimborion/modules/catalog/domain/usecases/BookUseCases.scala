@@ -3,7 +3,7 @@ package com.brimborion.modules.catalog.domain.usecases
 import java.time.LocalDate
 import java.util.UUID
 
-import com.brimborion.modules.catalog.domain.entities.{Author, Book}
+import com.brimborion.modules.catalog.domain.entities.Book
 import com.brimborion.modules.catalog.domain.usecases.interfaces.BookRepository
 
 import scala.concurrent.Future
