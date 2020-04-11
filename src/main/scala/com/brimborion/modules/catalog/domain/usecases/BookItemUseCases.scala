@@ -16,6 +16,10 @@ class BookItemUseCases(private val bookItemRepository: BookItemRepository, priva
 
   def getBookItem(bookItemId: UUID): Future[BookItem] = bookItemRepository.find(bookItemId)
 
-  def updateBookItemStatus(bookItemId: UUID, status: BookStatus): Future[BookItem] =
-    bookItemRepository.find(bookItemId).flatMap(bookItem => bookItemRepository.update(bookItem.copy(status = status)))
+  def updateBookItemStatus(bookItemId: UUID, status: BookStatus): Future[BookItem] = {
+    for {
+      bookItem <- bookItemRepository.find(bookItemId)
+      updatedBookItem <- bookItemRepository.update(bookItem.copy(status = status))
+    } yield updatedBookItem
+  }
 }

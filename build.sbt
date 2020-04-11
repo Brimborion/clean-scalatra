@@ -19,6 +19,7 @@ libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.2.3" % "runtime",
   "org.eclipse.jetty" % "jetty-webapp" % "9.4.19.v20190610" % "container",
   "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided",
+  "com.atlassian.oai" % "swagger-request-validator-core" % "2.9.0",
   "org.scalamock" %% "scalamock" % "4.4.0" % "test"
 )
 
