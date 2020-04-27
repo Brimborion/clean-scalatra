@@ -21,38 +21,38 @@ class FakeUserRepository extends UserRepository {
       .build(),
     new UserMock(UUID.fromString("699b011a-6c53-46bf-b47d-30fa1b43bd87"))
       .setPerson(new PersonMock().setName("Francis").setEmail("francis@test.com").build())
-      .setBorrowings(Vector(
-        new BookItemMock(UUID.fromString("ea5d62c5-fe03-46bb-a814-4db09270f647")).build(),
-        new BookItemMock(UUID.fromString("ea5d62c5-fe03-46bb-a814-4db09270f648")).build(),
-        new BookItemMock(UUID.fromString("ea5d62c5-fe03-46bb-a814-4db09270f649")).build(),
-        new BookItemMock(UUID.fromString("ea5d62c5-fe03-46bb-a814-4db09270f650")).build(),
-        new BookItemMock(UUID.fromString("ea5d62c5-fe03-46bb-a814-4db09270f651")).build()
-      ))
+      .setBorrowings(
+        Vector(
+          new BookItemMock(UUID.fromString("ea5d62c5-fe03-46bb-a814-4db09270f647")).build(),
+          new BookItemMock(UUID.fromString("ea5d62c5-fe03-46bb-a814-4db09270f648")).build(),
+          new BookItemMock(UUID.fromString("ea5d62c5-fe03-46bb-a814-4db09270f649")).build(),
+          new BookItemMock(UUID.fromString("ea5d62c5-fe03-46bb-a814-4db09270f650")).build(),
+          new BookItemMock(UUID.fromString("ea5d62c5-fe03-46bb-a814-4db09270f651")).build()
+        )
+      )
       .build()
   )
 
-  override def create(person: Person, borrowingIds: Vector[UUID], status: UserStatus): Future[User] = {
+  override def create(person: Person, status: UserStatus): Future[User] = Future {
     if (users.exists(user => user.person.email.equals(person.email))) {
-      Future.failed(throw DuplicateKeyException(s"A user with email ${person.email} already exists."))
+      throw DuplicateKeyException(s"A user with email ${person.email} already exists.")
     }
 
-    Future.sequence(borrowingIds.map(id => bookItemRepository.find(id))).map(borrowings => {
-      val user = User(
-        id = UUID.randomUUID(),
-        person,
-        borrowings,
-        status
-      )
-      users = users :+ user
+    val user = User(
+      id = UUID.randomUUID(),
+      person,
+      Vector.empty,
+      status
+    )
+    users = users :+ user
 
-      user
-    })
+    user
   }
 
   override def find(id: UUID): Future[User] = Future {
     val maybeUser = users.find(user => user.id.equals(id))
     maybeUser match {
-      case None => throw NotFoundException(s"User with id ${id} not found.")
+      case None       => throw NotFoundException(s"User with id ${id} not found.")
       case Some(user) => user
     }
   }
@@ -61,7 +61,7 @@ class FakeUserRepository extends UserRepository {
     val maybeUser = users.find(user => user.id.equals(id))
     maybeUser match {
       case None => throw NotFoundException(s"User with id ${id} not found.")
-      case _ => users = users.filter(user => !user.id.equals(id))
+      case _    => users = users.filter(user => !user.id.equals(id))
     }
   }
 
@@ -77,14 +77,12 @@ class FakeUserRepository extends UserRepository {
   }
 
   // Only for demo tests purpose
-  def dropData(): Unit = {
+  def dropData(): Unit =
     users = Vector.empty
-  }
 
   // Only for demo tests purpose
-  def addData(user: User): Unit = {
+  def addData(user: User): Unit =
     users = users :+ user
-  }
 
   // Only for demo tests purpose
   def getAllData: Vector[User] = users

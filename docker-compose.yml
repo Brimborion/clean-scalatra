@@ -21,6 +21,7 @@ services:
       - "8080:8080"
     networks:
       - library-net
+      - keycloak-net
 
   kong-migrations:
     image: kong-oidc:latest

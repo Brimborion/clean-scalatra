@@ -9,7 +9,7 @@ import com.brimborion.modules.user.domain.entities.{Person, User}
 import scala.concurrent.Future
 
 trait UserRepository {
-  def create(person: Person, borrowings: Vector[UUID], status: UserStatus): Future[User]
+  def create(person: Person, status: UserStatus): Future[User]
 
   @throws[NotFoundException]
   def find(id: UUID): Future[User]
